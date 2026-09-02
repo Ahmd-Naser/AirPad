@@ -4,6 +4,8 @@ public enum CommandType
 {
     LeftClick,
     RightClick,
+    LeftMouseDown, 
+    LeftMouseUp,
     MiddleClick,
     DoubleClick,
     ScrollUp,
@@ -12,7 +14,8 @@ public enum CommandType
     VolumeDown,
     Mute,
     ShowDesktop,
-    TaskView
+    TaskView,
+    SwitchWindow
 }
 
 public class MacroCommand

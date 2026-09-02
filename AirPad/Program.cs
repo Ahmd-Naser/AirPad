@@ -19,7 +19,7 @@ builder.Services.AddSignalR(options =>
     options.KeepAliveInterval = TimeSpan.FromSeconds(30);
 });
 
-builder.Services.AddSingleton<IMouseSimulator, MockMouseSimulator>();
+builder.Services.AddSingleton<IMouseSimulator, WindowsSimulator>();
 
 var app = builder.Build();
 
