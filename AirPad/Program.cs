@@ -2,6 +2,7 @@ using AirPad.Hubs;
 using AirPad.Services;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using QRCoder;
 using System.Net;
 using System.Net.Sockets;
 
@@ -37,11 +38,28 @@ var addresses = server?.Features.Get<IServerAddressesFeature>()?.Addresses;
 var port = addresses?.FirstOrDefault()?.Split(':').Last(); // استخراج المنفذ فقط
 
 string localIp = GetLocalIPv4();
+string directUrl = $"http://{localIp}:{port}";
 
 Console.WriteLine("==================================================");
 Console.WriteLine("🚀 AirPad Server is running!");
-Console.WriteLine($"[Direct Link]: http://{localIp}:{port}");
+Console.WriteLine($"[Direct Link]: {directUrl}");
 Console.WriteLine("==================================================");
+
+using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+{
+    // إنشاء بيانات الكود (بمستوى تصحيح خطأ منخفض L لتقليل حجم الكود لتسهيل قراءته من الشاشة)
+    QRCodeData qrCodeData = qrGenerator.CreateQrCode(directUrl, QRCodeGenerator.ECCLevel.L);
+
+    // 2. تحويله إلى نص (ASCII)
+    AsciiQRCode qrCode = new AsciiQRCode(qrCodeData);
+
+    // 3. رسم الكود: نستخدم "██" للمربع الأسود، و "  " (مسافتين) للمربع الأبيض
+    string qrCodeText = qrCode.GetGraphic(1, "██", "  ");
+
+    // 4. طباعته في الكونسول
+    Console.WriteLine(qrCodeText);
+}
+
 
 await app.WaitForShutdownAsync();
 
