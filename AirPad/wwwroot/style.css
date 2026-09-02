@@ -1,0 +1,48 @@
+﻿* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden; /* منع ظهور أشرطة التمرير */
+}
+
+#status {
+    padding: 10px;
+    text-align: center;
+    background-color: #333;
+    font-size: 14px;
+}
+
+#touchpad {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1e1e1e;
+    touch-action: none; /* مهم جداً لمنع الـ Scroll الخاص بالمتصفح */
+    user-select: none;
+}
+
+.controls {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    background-color: #2a2a2a;
+}
+
+button {
+    padding: 15px 30px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+}
