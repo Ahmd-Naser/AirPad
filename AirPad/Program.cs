@@ -1,10 +1,16 @@
 using AirPad.Hubs;
+using AirPad;
 using AirPad.Services;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using QRCoder;
 using System.Net;
 using System.Net.Sockets;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+
+// ... (باقي الاستدعاءات الموجودة لديك مثل Hubs و Services و System.Net) ...
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,40 +36,28 @@ app.UseStaticFiles();
 
 app.MapHub<AirPadHub>("/airpadHub");
 
+// بدء تشغيل سيرفر الويب في الخلفية (بدون إيقاف الكود هنا)
 await app.StartAsync();
 
-// استخراج المنفذ والـ IP وطباعة الرابط الصحيح
+// استخراج الرابط
 var server = app.Services.GetService<IServer>();
 var addresses = server?.Features.Get<IServerAddressesFeature>()?.Addresses;
-var port = addresses?.FirstOrDefault()?.Split(':').Last(); // استخراج المنفذ فقط
-
+var port = addresses?.FirstOrDefault()?.Split(':').Last();
 string localIp = GetLocalIPv4();
 string directUrl = $"http://{localIp}:{port}";
 
-Console.WriteLine("==================================================");
-Console.WriteLine("🚀 AirPad Server is running!");
-Console.WriteLine($"[Direct Link]: {directUrl}");
-Console.WriteLine("==================================================");
+// إعداد بيئة WinForms وتشغيلها
+Application.EnableVisualStyles();
+Application.SetCompatibleTextRenderingDefault(false);
 
-using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
-{
-    // إنشاء بيانات الكود (بمستوى تصحيح خطأ منخفض L لتقليل حجم الكود لتسهيل قراءته من الشاشة)
-    QRCodeData qrCodeData = qrGenerator.CreateQrCode(directUrl, QRCodeGenerator.ECCLevel.L);
+// تشغيل النافذة التي أنشأناها وتمرير الرابط لها
+var mainForm = new MainForm(directUrl);
+Application.Run(mainForm);
 
-    // 2. تحويله إلى نص (ASCII)
-    AsciiQRCode qrCode = new AsciiQRCode(qrCodeData);
+// عندما يقوم المستخدم بإغلاق التطبيق من الأيقونة بجوار الساعة، سيصل الكود هنا لإغلاق السيرفر بسلام
+await app.StopAsync();
 
-    // 3. رسم الكود: نستخدم "██" للمربع الأسود، و "  " (مسافتين) للمربع الأبيض
-    string qrCodeText = qrCode.GetGraphic(1, "██", "  ");
-
-    // 4. طباعته في الكونسول
-    Console.WriteLine(qrCodeText);
-}
-
-
-await app.WaitForShutdownAsync();
-
-
+// (دالة GetLocalIPv4 تبقى كما هي في أسفل الملف)
 // دالة مساعدة لاستخراج عنوان IPv4 المحلي الخاص بالواي فاي/الشبكة
 static string GetLocalIPv4()
 {
